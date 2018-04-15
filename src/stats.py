@@ -23,13 +23,11 @@ def fill_missing():
             if pd.isnull(aq.iloc[i][j]):
                 val = aq.iloc[i-1][j]
                 aq.set_value(i, j, val)
-    aq.to_csv('data/baq.csv')
+    aq.to_csv('data/aq.csv')
 
 def prepro_time():
     # generate training data for missing value prediction
-    aq = pd.read_csv('data/pre_aq.csv')
-    print(aq)
-    exit()
+    aq = pd.read_csv('data/aq.csv')
     x, y = [], []
     for i in range(len(aq) - 2):
         s_x, s_y = [], []
@@ -70,7 +68,7 @@ def train_model(target):
     regr.fit(x_train, y_train.ravel())
     pred = regr.predict(x_test)
     print(mean_absolute_error(y_test, pred))
-    aq = pd.read_csv('data/baq.csv')
+    aq = pd.read_csv('data/aq.csv')
     for i in range(1, len(aq)-1):
         if pd.isnull(aq.iloc[i]['PM10']):
             s_x = []
@@ -83,10 +81,10 @@ def train_model(target):
             s_x = poly.fit_transform(np.array(s_x).reshape(1, -1))
             mv = regr.predict(s_x)
             aq.set_value(i, 'PM10', mv[0])
-    aq.to_csv('data/pre_aq.csv')
+    aq.to_csv('data/filled_aq.csv')
 
 def baseline():
-    aq = pd.read_csv('data/baq.csv')
+    aq = pd.read_csv('data/aq.csv')
     count = 0
     tot = 0
     for i in range(len(aq)-1):
